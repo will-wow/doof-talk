@@ -7,13 +7,6 @@ import Layout from "./components/Layout";
 import TitlePage from "./components/TitlePage";
 import BgImage from "./components/BgImage";
 
-import bot from "./assets/bot.png";
-import shoot from "./assets/shoot.gif";
-import alive from "./assets/alive.gif";
-import battleBot from "./assets/battle-bot.gif";
-import trainwreck from "./assets/trainwreck.gif";
-import terminator from "./assets/terminator.webp";
-
 export const themes = [theme, prism];
 
 <Head>
@@ -22,193 +15,39 @@ export const themes = [theme, prism];
 
 <TitlePage>
 
-# Kablammo!
+# Computer Vision: Weirdly Easy?
 
-<img src={shoot} />
-
-Mike &amp; Will
+Will Ockelmann-Wagner
 
 </TitlePage>
 
-<Notes>Intro to Kablammo</Notes>
+<Notes>
+  Some of you may have met the robot on my desk. His name is Doof, he's a face-tracking robot, and he was almost creepily easy to build. I want to tell you a bit about how he works, what I learned about computer vision, and much of a solved problem all of this is.
+</Notes>
+
+---
+
+- Motion tracking
+- Face detection
+- Face following
+
+
+<Notes>
+Doof has three main capabilities: *show off all three*
+
+We're going to briefly see how those three things work. This won't be a technical tutorial, but a high-level overview
+</Notes>
 
 ---
 
 <Layout bg="secondary">
 
-# History
+# Motion Tracking
 
 </Layout>
 
 <Notes>
 
-- GoGaRuCo
-- Why?
-- Entrants?
-- Winner?
-- Results?
+First up is motion tracking. Doof only uses it to wake up and fall asleep, but 
 
 </Notes>
-
----
-
-# Demo
-
-- Mike
-- ScaredyBot (Will)
-- SharkAttack (Arbind) (ex-C5er)
-
-<h3>
-  <a href="http://kablammo.io/battles/5d9d128e421aa976a23773fd" target="_blank">
-    Kablammo.io match
-  </a>
-</h3>
-
----
-
-<Image src={battleBot} />
-
-<Notes>
-
-That's some robot carnage.
-And if you want to beat Mike, you too can make a robot
-
-</Notes>
-
----
-
-# Making a robot
-
-- Fork `carbonfive/kablammo-template`
-- Includes a `kablammo-strategy` SDK gem
-- Implement an `on_turn` function
-  - Robot gets acess to the board and any visible bots
-  - `on_turn` returns commands like "move N" or "shoot"
-- Robot can keep state in memory
-
----
-
-# The simplest bot
-
-```ruby
-on_turn do
-  fire!
-end
-```
-
----
-
-# How does a game work?
-
-- Players register github repos for robots
-- A tournament is 2 to 4 robots
-- Kablammo checks out repos and runs each in its own process
-- Communicates over Redis
-- Kablammo sends the game state to every bot, gets a move back
-- Executes the moves in an engine
-- If a robot times out, it stops playing
-- The game is saved and replayed on the client
-
----
-
-# Can you just `bundle install` a 2013 Ruby project?
-
----
-
-<BgImage src={trainwreck}>
-
-# 😞
-
-</BgImage>
-
-<Notes>
-
-No
-
-</Notes>
-
----
-
-# Resurecting Kablammo
-
-- Ruby 1.9.3: 💀
-- `mongo_mapper`: 💀
-- Switch to `Mongoid` and Ruby 2.6 🔧
-- Upgrade all the other Gems 💎
-
-<Notes>
-
-- So what happend?
-- Ruby 1.9 doesn't even install on Mac Mojave
-- mongo_mapper, the ORM, was dead, and didn't work on 2.6
-- So step one was to update to Ruby 2.6 and change to using a different ORM
-- That took a lot of little fixing, but then...
-
-</Notes>
-
----
-
-<Image src={alive} />
-
-<Notes>
-
-It's alive!
-
-</Notes>
-
----
-
-# Kablammo Uprades
-
-- Bigger maps 🌎
-- Easier to draw maps 🗺️
-- Move-and-turn 💃
-- Mobile-friendly game animation 📱
-- Testing &amp; CI 🧪
-- Test helpers for bot creators 🤖
-
-<Notes>
-
-Once it was working again, we added some upgrades
-
-</Notes>
-
----
-
-# Future work (for your next bench time?)
-
-- Better bot documentation
-- More bot helpers
-- Auto Tournaments
-- Power-ups
-
-<Notes>
-
-Some things that would be good bench projects
-
-</Notes>
-
----
-
-# Bot building tips
-
-- Remember where hidden bots are
-- Turn turrent while hidden
-- Don't forget to reload
-
-<Notes>
-
-
-- The engine will only tell your bot about enemys it can see. But once you see a bot, you can remember where it is, and guess where it was going
-- Sitting still and turning is a good way to get shot. A good strategy is to see an oppoent, hide, turn your turrent, then pop back out and shoot
-- You have to sit still to reload, so do that when you can so you don't run out of bullets at the wrong time
-
-</Notes>
-
----
-
-<BgImage src={terminator}>
-
-# Have fun!
-
-</BgImage>

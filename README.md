@@ -1,10 +1,8 @@
-# Kablammo Talk
+# Doof Talk
 
-A talk about [Kablammo](https://github.com/carbonfive/kablammo).
+A talk about [Doof](https://github.com/will-wow/doof), a friendly face-tracking robot
 
-Deck: [kablammo-talk.surge.sh](https://kablammo-talk.surge.sh)
-
-![](./src/assets/shoot.gif)
+Deck: [doof-talk.surge.sh](https://doof-talk.surge.sh)
 
 ## MDX-Deck
 
