@@ -1,5 +1,5 @@
 {
-  "name": "kablammo-talk",
+  "name": "doof-talk",
   "version": "1.0.0",
   "main": "src/deck.mdx",
   "license": "MIT",
@@ -15,7 +15,7 @@
     "start": "mdx-deck src/deck.mdx",
     "build": "mdx-deck build src/deck.mdx && npm run copy",
     "copy": "ncp ./src/assets ./public/assets",
-    "deploy": "surge -p public --domain https://kablammo-talk.surge.sh",
+    "deploy": "surge -p public --domain https://doof-talk.surge.sh",
     "format": "prettier --write \"**/*.{js,json,md,mdx}\"",
     "serve": " http-server public"
   },

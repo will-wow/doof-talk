@@ -7,10 +7,15 @@ import Layout from "./components/Layout";
 import TitlePage from "./components/TitlePage";
 import BgImage from "./components/BgImage";
 
+import dummy from './assets/dummy.gif'
+import hand from './assets/hand.png'
+import goats from './assets/goats.gif'
+import haar from './assets/haar.png'
+
 export const themes = [theme, prism];
 
 <Head>
-  <title>Kablammo!</title>
+  <title>Doof</title>
 </Head>
 
 <TitlePage>
@@ -22,20 +27,81 @@ Will Ockelmann-Wagner
 </TitlePage>
 
 <Notes>
-  Some of you may have met the robot on my desk. His name is Doof, he's a face-tracking robot, and he was almost creepily easy to build. I want to tell you a bit about how he works, what I learned about computer vision, and much of a solved problem all of this is.
+
+- Some of you may have met the robot on my desk.
+- If you haven't, his name is Doof (short for Doofus), he's a face-tracking robot
+- almost creepily easy to build.
+- I want to tell you a bit about how he works, what I learned about computer vision, and much of a solved problem face tracking is
+- This is more general interest than a tutorial, so it should be interesting to everyone.
+
 </Notes>
 
 ---
+
+
+<Layout bg="secondary">
+
+# Why?
+
+</Layout>
+
+<Notes>
+
+- Why did I did this?
+- All started with Iron Man 1
+- Tony Start has a robotic arm friend named Dummy.
+
+</Notes>
+
+---
+
+<BgImage src={dummy} />
+
+<Notes>
+
+I also wanted a robot friend who would love me back, even when I abused him, and so Doof was born.
+
+</Notes>
+
+---
+
+# Equipment
+
+- Raspberry Pi 3B+: $45
+- Pan-Tilt HAT: $20
+- PiCam v2: $25
+- PiBow Case: $20
+- SD Card: $5
+
+<Notes>
+
+- This kind of tech isn't free, but it's pretty inexpensive.
+
+- Doof's made of a Raspberry Pi, a special pan-tilt hat, and a webcam. Total equipment was about $120.
+- And I was tempted to make a MasterCard priceless joke here, but I think that's about 20 years out of date and also based on a commerial, so I decided to skip that
+- You're welcome.
+
+</Notes>
+
+---
+
+# Abilities
 
 - Motion tracking
 - Face detection
 - Face following
 
-
 <Notes>
-Doof has three main capabilities: *show off all three*
 
-We're going to briefly see how those three things work. This won't be a technical tutorial, but a high-level overview
+So what can Doof do? He has three main capabilities
+
+- If you wave your hand in front of him, he falls asleep. Then he waits for motion to wake him back up.
+- While awake he can detect faces
+- if he does detect your face, he'll try to move toward it, almost like he likes you or something. Which he does.
+
+- We're going to briefly see how those three things work
+- And maybe you'll keep all this in mind the next time you see a camera on the street and wonder if it's watching you, which it is.
+
 </Notes>
 
 ---
@@ -48,6 +114,199 @@ We're going to briefly see how those three things work. This won't be a technica
 
 <Notes>
 
-First up is motion tracking. Doof only uses it to wake up and fall asleep, but 
+First up is motion tracking. Doof only uses it to wake up and fall asleep, but in general it's a powerful tool. Here's how it works.
+
+</Notes>
+
+---
+
+# Average Image
+
+- Take a every frame
+- Average them together
+- If the next frame is different, there's movement!
+- Find the area that's different, that's the moving thing
+
+---
+
+<Notes>
+
+- merge every frame into a running average of the background
+- OpenCV, a python computer vision lib, has tools for doing that
+- and diffing a new frame to the average to see if anything changed
+- if something did, then that's where the movement is
+
+</Notes>
+
+
+# Average Image Example
+
+<img src={hand} />
+
+<Notes>
+
+- I meant to take my own images for this talk, but forgot to take Doof home, so here's some blogger's hand instead
+- Because his hand is only in a few frames per position, on average it fades into the background
+- If there's a new thing, we know there's movement.
+
+</Notes>
+
+---
+
+```python
+def update_background(self, frame):
+  cv2.accumulateWeighted(frame, self.bg, ACCUM_WEIGHT)
+
+def detect(self, frame):
+  delta = cv2.absdiff(self.bg.astype("uint8"), frame)
+  thresh = cv2.threshold(delta, THRESHOLD, 255, cv2.THRESH_BINARY)[1]
+
+  cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
+                          cv2.CHAIN_APPROX_SIMPLE)
+```
+
+<Notes>
+
+- Just to get a sense of complexity (or lack thereof), here's the core code.
+- OpenCV has methods to accumulate the avergae background, and to detect the location of differences in a new frame
+- Upshot is not a lot of code, easy to follow a tutorial
+
+</Notes>
+
+---
+
+# Movement Pitfalls
+
+<Notes>
+
+- One issue I ran into at first was when doof doof moved he would detect movement, which would put him to sleep.
+- That changed the image again, which started him awake, which changed the image, which put him back to sleep...
+
+</Notes>
+
+---
+
+<BgImage src={goats} />
+
+<Notes>
+
+- The solution was just to wait for the movement to end, then reset the background image to build a new average background
+- about a second to start tracking again
+
+</Notes>
+
+---
+
+<Layout bg="secondary">
+
+# Face Detection
+
+</Layout>
+
+<Notes>
+
+Next is face detection. This was even easier because OpenCV comes with a pre-trained face detector
+
+</Notes>
+
+---
+
+```python
+face_cascade = "haarcascade_frontalface_default.xml"
+FACE_CASCADE = cv2.CascadeClassifier()
+FACE_CASCADE.load(face_cascade)
+
+def detect_faces(frame):
+  return FACE_CASCADE.detectMultiScale(frame,
+    scaleFactor=1.1, minNeighbors=3)                                        
+```
+
+<Notes>
+
+- Here's all the code to detect a face from an image. You load up the detector, and apply it to the image.
+- Like I said, creepy how easy it is to do this stuff.
+- See that it uses a haar cascade xml file that comes with
+
+</Notes>
+
+---
+
+# Haar Cascade Classifiers
+
+<img src={haar} />
+
+<Notes>
+
+- How it works is the classifier finds common features that suggest a face, like a dark line for the eyes, and a light line for the nose.
+- This has to happen on every frame, 24 times a second
+- Then there's some fancy stuff for making it more effecient, but you don't need to know how it works to use it.
+- Which is lucky, cuz I don't know how it works, but can use it
+- This technique is from 2001. There are more powerful techniques using nural networks, but this is just fine for little old Doof
+
+</Notes>
+
+---
+
+<Layout bg="secondary">
+
+# Face Tracking
+
+</Layout>
+
+<Notes>
+
+Finally, once Doof sees a face, I want him to move towards it. 
+
+</Notes>
+
+---
+
+# Movement is easy
+
+```python
+import pantilthat
+
+pantilthat.pan(45)
+pantilthat.tilt(-30)
+```
+
+<Notes>
+
+- Movement itself is easy
+- this pantilthat comes with a python library, import, pan(45), tilt(-30)
+- how should he move
+
+</Notes>
+
+---
+
+# Move Toward Face
+
+- face location has x, y coordinates
+- pan and tilt towards those coordinates
+- every frame the face gets closer to the center
+- the closer to centered, the slower he moves
+- move quickly at first, then get more precise
+
+
+<Notes>
+
+- simple algo
+
+*Use your hands*
+
+</Notes>
+
+---
+
+<Layout bg="secondary">
+
+# Say Hi To Doof!
+
+</Layout>
+
+<Notes>
+
+That's it! He's here to play with after the talk. Thanks!
 
 </Notes>
